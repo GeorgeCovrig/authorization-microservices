@@ -1,0 +1,21 @@
+spring:
+  cloud:
+    consul:
+      discovery:
+        instanceId: ${spring.application.name}:${random.value}
+        prefer-ip-address: true
+      host: localhost
+      port: 8500
+  application:
+    name: product-service-tutorial
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8180/realms/cool-programmer-tutorial/protocol/openid-connect/certs
+          issuer-uri: http://localhost:8180/realms/cool-programmer-tutorial
+logging:
+  level:
+    ROOT: info
+server:
+  port: 8600

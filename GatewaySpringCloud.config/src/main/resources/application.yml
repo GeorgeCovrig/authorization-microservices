@@ -1,0 +1,52 @@
+server:
+  port: 8787
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.actuate.autoconfigure.security.reactive.ReactiveManagementWebSecurityAutoConfiguration
+  application:
+    name: gateway-tutorial
+  security:
+    oauth2:
+      client:
+        registration:
+          gateway:
+            provider: keycloak
+            client-id: cool-programmer-client
+            client-secret: 8FjS5coZIo8DZoKjuIFdKJcmLSZlsDQm
+            authorization-grant-type: authorization_code
+            scope: openid
+        provider:
+          keycloak:
+            authorization-uri: http://localhost:8180/realms/cool-programmer-tutorial/protocol/openid-connect/auth
+            token-uri: http://localhost:8180/realms/cool-programmer-tutorial/protocol/openid-connect/token
+            user-info-uri: http://localhost:8180/realms/cool-programmer-tutorial/protocol/openid-connect/userinfo
+            jwk-set-uri: http://localhost:8180/realms/cool-programmer-tutorial/protocol/openid-connect/certs
+            issuer-uri: http://localhost:8180/realms/cool-programmer-tutorial
+  cloud:
+    gateway:
+      default-filters:
+        - TokenRelay
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/product-service
+            - Method=POST, GET
+
+    consul:
+      discovery:
+        instanceId: ${spring.application.name}:${random.value}
+        prefer-ip-address: true
+      config:
+        enabled: false
+      host: localhost
+      port: 8500
+
+
+#server.forward-headers-strategy: framework
+logging:
+  level:
+    ROOT: INFO
